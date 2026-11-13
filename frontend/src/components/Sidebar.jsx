@@ -45,7 +45,7 @@ export default function Sidebar({
           <div className="sidebar-header">
             <div className="sidebar-logo">
               <img src={TUBE_LOGO} alt="TubeChat Logo" />
-              <span className="text-headline-sm sidebar-logo-text">TubeChat</span>
+              <span className="text-headline-sm sidebar-logo-text">Enthra</span>
             </div>
             
             <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>

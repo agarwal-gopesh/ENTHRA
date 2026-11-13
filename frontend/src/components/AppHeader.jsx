@@ -35,7 +35,7 @@ export default function AppHeader({
               <span className="text-headline-sm header-video-title truncate">{videoTitle}</span>
             </>
           ) : (
-            <span className="text-headline-sm" style={{ color: 'var(--on-surface)' }}>TubeChat</span>
+            <span className="text-headline-sm" style={{ color: 'var(--on-surface)' }}>Enthra</span>
           )}
         </div>
 
