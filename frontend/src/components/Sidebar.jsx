@@ -1,7 +1,10 @@
 import { useTheme } from '../contexts/ThemeContext';
 import { getThumbnailUrl } from '../services/api';
 
-const TUBE_LOGO = 'https://lh3.googleusercontent.com/aida/AEtjO1XjCAoVn4dhqGRRqIGyjco-atHwWU-LsE1R-Vq9H9A-MyhJrBosIWvd6xM3vXQQu5Lllq4PjRz0eDsGPjBdAaNU9SW0GVTjrnrPS2uQW09lSpB9YHd-Na3McXwEUGaS1BqjBxxhBja7LAef1Lmqn6Y8eqjUHNT7srdkvGvcN0eHk1gTqEeltkSxO-VCAtHNevV1CDA1xTWGgJBt-M0UkZDTOzmmMF35nCnYZl7nrZ3XUJCvMdXQ87lfwwI';
+// const TUBE_LOGO = 'https://lh3.googleusercontent.com/aida/AEtjO1XjCAoVn4dhqGRRqIGyjco-atHwWU-LsE1R-Vq9H9A-MyhJrBosIWvd6xM3vXQQu5Lllq4PjRz0eDsGPjBdAaNU9SW0GVTjrnrPS2uQW09lSpB9YHd-Na3McXwEUGaS1BqjBxxhBja7LAef1Lmqn6Y8eqjUHNT7srdkvGvcN0eHk1gTqEeltkSxO-VCAtHNevV1CDA1xTWGgJBt-M0UkZDTOzmmMF35nCnYZl7nrZ3XUJCvMdXQ87lfwwI';
+
+import TUBE_LOGO from "../../src/logo.png";
+
 
 export default function Sidebar({
   collapsed,
