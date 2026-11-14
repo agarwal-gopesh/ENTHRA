@@ -3,16 +3,16 @@
 
 # ENTHRA
 
-### Turn YouTube videos into conversations.
+### AI-Powered YouTube Conversational Intelligence
 
-**A multilingual, timestamp-aware YouTube intelligence assistant powered by RAG, LangGraph, and Google Gemini.**
+**Transform YouTube videos into interactive knowledge bases using Retrieval-Augmented Generation (RAG), LangGraph, and Google Gemini.**
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=20232A)](https://react.dev/)
-[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![LangGraph](https://img.shields.io/badge/Orchestration-LangGraph-1C3C3C)](https://www.langchain.com/langgraph)
-[![ChromaDB](https://img.shields.io/badge/Vector_DB-ChromaDB-FF6B35)](https://www.trychroma.com/)
-[![Gemini](https://img.shields.io/badge/LLM-Google_Gemini-8E75B2?logo=googlegemini&logoColor=white)](https://ai.google.dev/)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi)
+![LangGraph](https://img.shields.io/badge/LangGraph-Agent_Orchestration-1C3C3C)
+![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_Database-orange)
+![Gemini](https://img.shields.io/badge/Google-Gemini-8E75B2)
 
 *Watch less. Understand more.*
 
@@ -20,326 +20,526 @@
 
 ---
 
-## ✨ What is Enthra?
+## 📌 Overview
 
-Enthra transforms a YouTube video into an interactive knowledge base that you can question in natural language.
+Enthra is a multilingual, RAG-powered AI application that allows users to interact with YouTube videos through natural language conversations.
 
-Paste a YouTube URL, let Enthra process the video's transcript, and start a conversation about its content. Ask specific questions, explore ideas from earlier in the video, or ask follow-up questions without having to repeat the context.
+Instead of manually watching or navigating through lengthy videos, users can simply provide a YouTube URL and ask questions about its content.
 
-Built around a **Retrieval-Augmented Generation (RAG)** pipeline and a **stateful LangGraph workflow**, Enthra retrieves relevant transcript passages and uses them to generate answers grounded in the video.
+The application automatically extracts the video transcript, processes it into meaningful chunks, generates semantic embeddings, and stores them in a persistent vector database.
 
-It is designed with multilingual content in mind, including **English, Hindi, and Hinglish**.
+When a question is asked, Enthra retrieves relevant transcript passages and passes them to Google Gemini to generate context-aware, timestamp-grounded responses.
 
-## 🎯 Why Enthra?
+The system uses LangGraph to manage multi-turn conversations, allowing users to ask follow-up questions without repeating the context.
 
-Long videos often contain useful information buried across hours of conversation. Finding one explanation can mean scrubbing through a timeline, scanning comments, or searching manually.
+## 🎯 Purpose
 
-Enthra makes that process conversational:
+Long-form YouTube content often contains valuable information that can be difficult to locate.
 
-- **Ask instead of scrub:** Find explanations and details by asking questions.
-- **Keep the conversation going:** Ask follow-up questions that depend on earlier messages.
-- **Get answers with timestamps:** Jump directly to the relevant moment in the original video.
-- **Explore multilingual content:** Work with English, Hindi, and Hinglish transcripts.
-- **Stay grounded in the source:** Responses are generated using retrieved transcript context rather than relying only on the model's general knowledge.
+Users frequently need to:
+
+- Navigate through hours of video content.
+- Manually search for specific explanations.
+- Remember context from previous discussions.
+- Find relevant information in Hindi, English, or Hinglish videos.
+- Revisit specific moments to verify information.
+
+The goal of Enthra is to simplify this process by turning videos into conversational knowledge sources.
 
 ## 🚀 Features
 
-| Feature | What it does |
-|---|---|
-| YouTube URL ingestion | Accepts standard, shortened, Shorts, embed, and live-video URL formats |
-| Automatic transcript extraction | Tries manual captions, auto-generated captions, and an available-language fallback |
-| Multilingual text processing | Handles Hindi punctuation and English/Hindi transcript content |
-| Semantic search | Finds relevant transcript passages using BGE-M3 embeddings |
-| Persistent vector index | Stores video chunks in ChromaDB and avoids re-indexing videos already indexed |
-| Multi-turn conversations | Uses LangGraph state and query rewriting to understand follow-up questions |
-| Hybrid retrieval | Combines the top 6 semantic matches with the first 3 introductory chunks |
-| Timestamp-aware answers | Converts timestamps in responses into links that open the video at the relevant point |
-| Markdown-friendly responses | Supports structured answers, emphasis, and code formatting |
-| Flexible backend connection | Configure a local backend or a remotely exposed endpoint through the frontend |
+- Load YouTube videos using their URLs.
+- Support standard, shortened, Shorts, embed, and live-video URL formats.
+- Automatically extract manual and auto-generated transcripts.
+- Multilingual transcript handling for Hindi and English.
+- Language-aware text chunking.
+- Hindi punctuation-aware text splitting.
+- Generate semantic embeddings using `BAAI/bge-m3`.
+- Store embeddings in persistent ChromaDB.
+- Avoid redundant indexing of previously processed videos.
+- Perform semantic similarity search.
+- Multi-turn conversational RAG using LangGraph.
+- Context-aware query rewriting.
+- Hybrid retrieval combining semantic results and introductory context.
+- Generate grounded responses using Google Gemini Flash.
+- Include relevant video timestamps in AI responses.
+- Interactive timestamp navigation to the original YouTube video.
+- Markdown-formatted responses and code blocks.
+- Dark and light interface themes.
+- Configurable backend connection for local and remote access.
 
-## 🖥️ How It Works
+## 🧠 How It Works
 
-At a high level, Enthra has three main parts:
+Enthra follows a Retrieval-Augmented Generation architecture combined with a stateful conversational workflow.
 
-1. **React frontend** for video submission, progress feedback, and the chat experience.
-2. **FastAPI backend** for ingestion, session handling, and communication with the AI workflow.
-3. **RAG pipeline** for transcript processing, vector retrieval, query rewriting, and answer generation.
+The application consists of three major components:
+
+1. **Frontend:** React-based interface for video submission, chat interaction, and timestamp navigation.
+2. **Backend:** FastAPI REST API responsible for video ingestion, session management, and communication with the RAG pipeline.
+3. **AI Pipeline:** LangGraph-based workflow responsible for query rewriting, semantic retrieval, and grounded response generation.
+
+### System Architecture
 
 ```mermaid
-flowchart TD
-    A[User submits YouTube URL] --> B[React Frontend]
-    B --> C[FastAPI Backend]
-    C --> D[Extract Video ID]
-    D --> E[Fetch Transcript]
-    E --> F[Split into Chunks]
-    F --> G[BAAI/bge-m3 Embeddings]
-    G --> H[(ChromaDB)]
-    C --> I[Create Chat Thread]
-    I --> J[User asks a question]
-    J --> K[LangGraph Workflow]
-    K --> L[Rewrite Follow-up Query]
-    L --> M[Hybrid Retrieval]
-    M --> H
-    H --> N[Relevant Transcript Context]
-    N --> O[Gemini Flash]
-    O --> P[Grounded Answer + Timestamps]
-    P --> B
+flowchart TB
+    A[User Interface<br/>React 19 + Vite]
+
+    B[FastAPI Backend]
+
+    C[Transcript Extraction]
+    D[Text Processing]
+    E[BAAI/bge-m3 Embeddings]
+    F[(ChromaDB)]
+
+    G[LangGraph Workflow]
+    H[Query Rewriting]
+    I[Hybrid Retrieval]
+    J[Gemini Flash]
+    K[Grounded Response]
+
+    A <-->|REST API| B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+
+    B --> G
+    G --> H
+    H --> I
+    I <--> F
+    I --> J
+    J --> K
+    K --> A
 ```
 
-### 1. Video Ingestion and Indexing
+## 🔄 RAG Pipeline
 
-When a user submits a YouTube URL:
+### 1️⃣ Video Ingestion
 
-1. Enthra extracts the 11-character video ID from the URL.
-2. It checks whether that video has already been indexed.
-3. If needed, it retrieves the transcript using `youtube-transcript-api`.
-4. Transcript selection follows this priority:
-   - Manually created English or Hindi transcript
-   - Auto-generated English or Hindi transcript
-   - First available transcript as a fallback
-5. The transcript is split into overlapping chunks.
-6. `BAAI/bge-m3` converts the chunks into dense vector embeddings.
-7. Chunks and metadata are stored in ChromaDB, associated with the video ID.
+The user enters a YouTube URL through the React interface.
 
-**Chunking Configuration**
+The application:
 
-| Setting | Value |
+- Validates and extracts the YouTube video ID.
+- Supports multiple YouTube URL formats.
+- Checks whether the video has already been indexed.
+- Retrieves the transcript using `youtube-transcript-api`.
+- Fetches video metadata using the YouTube oEmbed API.
+
+**Transcript Retrieval Priority:**
+
+1. Manually created English or Hindi transcripts.
+2. Auto-generated English or Hindi transcripts.
+3. First available transcript as a fallback.
+
+This fallback mechanism helps the application process videos with different caption configurations.
+
+### 2️⃣ Transcript Processing & Chunking
+
+The extracted transcript is divided into smaller overlapping chunks before generating embeddings.
+
+**Current Configuration:**
+
+| Parameter | Value |
 |---|---:|
-| Chunk size | 1,000 characters |
-| Chunk overlap | 200 characters |
-| Hindi sentence separator | `।` |
+| Chunk Size | 1000 |
+| Chunk Overlap | 200 |
+| Primary Separators | Paragraphs, sentences, punctuation |
+| Hindi Separator | `।` |
 
-The custom separator helps preserve Hindi sentence boundaries during splitting.
+The project uses LangChain's `RecursiveCharacterTextSplitter`.
 
-### 2. Multi-Turn RAG with LangGraph
+A custom Hindi punctuation separator (`।`) is included to preserve Indic sentence boundaries during text splitting.
 
-Enthra uses a three-node LangGraph workflow:
+### 3️⃣ Embedding Generation
+
+Each transcript chunk is converted into a numerical vector representation.
+
+**Embedding Model:**
+
+`BAAI/bge-m3`
+
+The model provides multilingual semantic representations, making it suitable for English and Hindi content.
+
+The generated embeddings capture the semantic meaning of transcript passages rather than relying only on keyword matching.
+
+### 4️⃣ Vector Database
+
+The generated embeddings are stored in:
+
+**ChromaDB**
+
+Each stored chunk contains metadata such as:
+
+- `video_id`
+- `chunk_index`
+- `language`
+
+The video ID is used to filter retrieval results so that queries remain restricted to the currently selected video.
+
+The vector database also uses persistent local storage to avoid repeating the embedding process for previously indexed videos.
+
+### 5️⃣ Query Rewriting
+
+Enthra uses LangGraph to maintain conversational context across multiple questions.
+
+The workflow contains a `rewrite_query` node that converts context-dependent follow-up questions into standalone search queries.
+
+For example, a follow-up question that contains pronouns or references to earlier messages is reformulated using the conversation history before semantic retrieval.
+
+This improves retrieval accuracy by providing a more complete query to the embedding model.
+
+### 6️⃣ Hybrid Retrieval
+
+The `retrieve` node performs two retrieval operations:
+
+**Semantic Retrieval**
+- Searches ChromaDB using the rewritten query.
+- Retrieves the top 6 semantically relevant chunks.
+
+**Introductory Context Retrieval**
+- Retrieves the first 3 chunks of the video.
+- Preserves the introductory context of the video.
+
+The retrieved chunks are then:
+
+- Merged.
+- Deduplicated using `chunk_index`.
+- Sorted chronologically.
+- Combined into a unified context.
+
+This approach combines specific semantic information with the broader context of the video.
+
+### 7️⃣ Answer Generation
+
+The retrieved transcript context is passed to Google Gemini Flash.
+
+The `generate` node uses a grounded system prompt that instructs the model to:
+
+- Answer using the provided transcript excerpts.
+- Avoid generating unsupported information.
+- Include relevant timestamps in `[MM:SS]` format.
+- Follow the language used by the user.
+- Clearly indicate when information cannot be found in the available transcript.
+
+The generated response is returned to the frontend for rendering.
+
+## 🔁 LangGraph Workflow
+
+The conversational pipeline consists of three main nodes:
 
 ```mermaid
 flowchart TD
     A([User Question]) --> B[rewrite_query]
     B --> C[retrieve]
     C --> D[generate]
-    D --> E([Answer])
+    D --> E[Save Conversation State]
+    E --> F([Final Response])
 ```
 
 | Node | Responsibility |
 |---|---|
-| `rewrite_query` | Uses conversation history to turn a follow-up into a standalone search query |
-| `retrieve` | Fetches relevant transcript chunks and introductory context from ChromaDB |
-| `generate` | Sends the retrieved context to Gemini and generates a source-grounded answer |
+| `rewrite_query` | Reformulates follow-up questions using conversation history |
+| `retrieve` | Performs hybrid retrieval using ChromaDB |
+| `generate` | Generates grounded responses using Gemini |
 
-**Why Query Rewriting Matters**
+### State Management
 
-Imagine this conversation:
+LangGraph maintains conversation state using a `ChatState` schema.
 
-- User: "Explain the Chandrayaan-3 mission."
-- User: "How much did it cost?"
-
-The second question is understandable in the conversation, but searching for the phrase *"How much did it cost?"* alone may not retrieve the right passage.
-
-The query-rewriting node uses chat history to form a standalone query, such as *"What was the cost of the Chandrayaan-3 mission?"*, before retrieval.
-
-**Hybrid Context Retrieval**
-
-For each question, Enthra combines:
-
-- The **top 6 semantic matches** returned by vector search.
-- The **first 3 chunks** of the video, which provide introductory context.
-
-The chunks are merged, deduplicated, sorted chronologically, and passed to the generation node.
-
-**Grounded Response Generation**
-
-The generation prompt instructs Gemini to:
-
-- Answer using the supplied transcript excerpts.
-- Include relevant timestamps in `[MM:SS]` format.
-- Follow the language used by the user where possible.
-- Say when the answer cannot be found in the available transcript context.
-
-### 3. Timestamp Navigation
-
-Enthra parses timestamps in the AI response and turns them into interactive links.
-
-For example, a timestamp such as `[14:32]` becomes a YouTube link that opens the video at **872 seconds**.
-
-This connects the answer back to its original source, so users can verify or explore the explanation in context.
-
-## 🧰 Tech Stack
-
-| Layer | Technology | Purpose |
-|---|---|---|
-| Frontend | React 19 | Interactive chat interface |
-| Build tool | Vite | Frontend development and build tooling |
-| Styling | Custom CSS | Responsive UI, themes, and visual design |
-| Backend | FastAPI | REST API and request handling |
-| ASGI server | Uvicorn | Runs the FastAPI application |
-| Agent orchestration | LangGraph | Stateful, multi-step conversation workflow |
-| LLM integration | LangChain Core | Message handling and model invocation |
-| Language model | Google Gemini Flash | Query rewriting and answer generation |
-| Embeddings | Hugging Face `BAAI/bge-m3` | Multilingual semantic embeddings |
-| Vector database | ChromaDB | Persistent transcript-vector storage |
-| Transcript extraction | `youtube-transcript-api` | Retrieves YouTube captions and transcripts |
-| Video metadata | YouTube oEmbed API | Retrieves video titles |
-
-## 🔌 Backend API
-
-The FastAPI backend exposes the following endpoints:
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/chats` | Ingests a video and initializes a chat thread |
-| `GET` | `/chats` | Lists available chat sessions |
-| `GET` | `/chats/{thread_id}/messages` | Retrieves a thread's conversation history |
-| `POST` | `/chats/{thread_id}/messages` | Submits a question and returns the AI response |
-
-### Example: Create a Chat
-
-**Request**
-
-```json
-{
-  "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY"
-}
+```python
+class ChatState(TypedDict):
+    messages: Annotated[list, add_messages]
+    video_id: str
+    query: str
+    context: str
 ```
 
-**Response**
+The `InMemorySaver` checkpointer maintains thread-isolated conversation state.
 
-```json
-{
-  "thread_id": "a93b4f12-0761-4fa3-9f82-a9bdf1184762",
-  "video_id": "kCc8FmEb1nY",
-  "title": "The spelled-out intro to neural networks and backpropagation",
-  "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY"
-}
-```
+Each conversation receives a unique `thread_id`, allowing the application to distinguish between different chat sessions.
 
-### Example: Ask a Question
+## ⏱️ Timestamp Navigation
 
-**Request**
+One of Enthra's key features is interactive timestamp navigation.
 
-```json
-{
-  "question": "What is the role of the loss function?"
-}
-```
+The AI response includes timestamps referencing relevant portions of the original video.
 
-**Response Shape**
+The frontend parses these timestamps and converts them into clickable navigation links.
 
-```json
-{
-  "answer": "The loss function measures how well the network is performing..."
-}
-```
+For example:
 
-The answer can include Markdown formatting and timestamp references that the frontend renders as interactive navigation links.
+`[14:32]`
 
-## 🧠 Notable Engineering Decisions
+is converted into a YouTube URL that opens the video at 872 seconds.
 
-A few design choices make Enthra more than a basic transcript chatbot:
+This allows users to verify the generated response and revisit the exact portion of the video.
 
-- **Query rewriting for conversational retrieval:** Follow-up questions are reformulated using chat history before semantic search.
-- **Introductory context alongside semantic matches:** The first three chunks help preserve the video's broader context when a question focuses on a narrow detail.
-- **Hindi-aware chunk splitting:** The Hindi danda (`।`) is included among the text separators.
-- **Video-level indexing checks:** Previously indexed videos can reuse their stored vectors instead of repeating the embedding process.
-- **Thread-isolated conversation state:** LangGraph's checkpointer keeps message state associated with a conversation thread.
-- **Source-linked answers:** Clickable timestamps make it easier to verify an answer against the original video.
+## 🛠️ Tech Stack
 
-## 📊 Reported Performance
+| Technology | Purpose |
+|---|---|
+| Python 3.10+ | Core backend programming language |
+| React 19 | Frontend application |
+| Vite | Frontend build tooling |
+| Custom CSS | Responsive interface and theme management |
+| FastAPI | Backend REST API |
+| Uvicorn | ASGI server |
+| LangGraph | Stateful agent orchestration |
+| LangChain Core | LLM integration and message handling |
+| Google Gemini Flash | Query rewriting and answer generation |
+| Hugging Face | Embedding model integration |
+| BAAI/bge-m3 | Multilingual embedding generation |
+| ChromaDB | Persistent vector database |
+| youtube-transcript-api | YouTube transcript extraction |
+| YouTube oEmbed API | Video metadata retrieval |
 
-The following figures are observations recorded during project testing. Actual performance can vary with video length, hardware, network conditions, and model response times.
-
-| Metric | Observed Time |
-|---|---:|
-| Transcript ingestion (average 30-minute video) | 1.5–3 seconds |
-| Vector indexing | 2–4 seconds |
-| Query rewriting | 400–600 ms |
-| Local ChromaDB retrieval | Under 50 ms |
-| Answer generation | 1.0–1.8 seconds |
-
-**Test Coverage Included:**
-
-- Long-form podcasts, including videos over two hours.
-- Hindi and Hinglish lectures and explainers.
-- Technical lectures and code walkthroughs.
-- Multi-turn follow-up questions.
-- Timestamp extraction and navigation.
-
-## 🗺️ Roadmap
-
-Planned improvements include:
-
-- [ ] **Whisper transcription:** Support videos without accessible captions using Whisper or Faster-Whisper.
-- [ ] **Embedded YouTube player:** Play the video inside the chat interface and jump to timestamps without opening a new tab.
-- [ ] **Persistent chat database:** Move chat-session storage from in-memory structures to SQLite or PostgreSQL.
-- [ ] **Retrieved-context inspector:** Let users inspect the transcript passages used to generate an answer.
-
-## ⚙️ Getting Started
-
-The implementation plan defines the architecture and API, but does not include the final repository-specific dependency files or exact run commands. Add the verified commands for your project before publishing this section.
-
-**Prerequisites**
-
-- Python 3.10 or later
-- Node.js and npm
-- A Google Gemini API key
-- Access to the YouTube transcript service
-
-### Configuration
-
-Set up the Gemini API key in the backend environment. Keep secret keys out of source control. Do not commit `.env` files or API credentials to GitHub.
-
-### Run the Application
-
-Add the actual installation and startup commands for your repository here once your `requirements.txt` / `pyproject.toml` and frontend `package.json` are finalized.
-
-## 📁 Project Structure
-
-The implementation plan identifies these core backend modules and frontend components. Update this tree to match the exact files in your repository.
+## 📂 Project Structure
 
 ```text
 Enthra/
+│
 ├── api.py
+│   └── FastAPI application and REST endpoints
+│
 ├── transcript.py
+│   └── YouTube URL parsing and transcript extraction
+│
 ├── vector_store.py
+│   └── Text chunking, embeddings, and ChromaDB operations
+│
 ├── graph.py
+│   └── LangGraph conversational RAG workflow
+│
 └── frontend/
+    │
     ├── src/
+    │   │
     │   ├── WelcomeScreen.jsx
+    │   │   └── Video URL input and welcome interface
+    │   │
     │   ├── LoadingScreen.jsx
+    │   │   └── Video processing progress interface
+    │   │
     │   ├── ChatScreen.jsx
+    │   │   └── Main conversational interface
+    │   │
     │   ├── StructuredResponse.jsx
+    │   │   └── Markdown rendering and timestamp parsing
+    │   │
     │   └── ApiSettingsModal.jsx
+    │       └── Backend connection configuration
+    │
     └── ...
 ```
 
-## 🔐 Notes
+## ⚙️ Complete Application Flow
 
-- Transcript availability depends on the video and the captions made available by YouTube.
-- The quality of answers depends on transcript quality and the relevance of retrieved passages.
-- Chat state is described as in-memory in the current implementation plan. It should not be treated as permanent, cross-restart conversation storage.
-- Keep API keys and other credentials private.
+```text
+User enters YouTube URL
+          │
+          ▼
+Extract Video ID
+          │
+          ▼
+Check Existing Vector Index
+          │
+          ▼
+Extract Video Transcript
+          │
+          ▼
+Process and Clean Transcript
+          │
+          ▼
+Split Transcript into Chunks
+          │
+          ▼
+Generate BGE-M3 Embeddings
+          │
+          ▼
+Store Embeddings in ChromaDB
+          │
+          ▼
+Initialize Unique Chat Thread
+          │
+          ▼
+User Asks a Question
+          │
+          ▼
+LangGraph Workflow
+          │
+          ▼
+Rewrite Query Using Chat History
+          │
+          ▼
+Hybrid Retrieval
+          │
+          ▼
+Retrieve Relevant Transcript Context
+          │
+          ▼
+Generate Response Using Gemini
+          │
+          ▼
+Include Relevant Timestamps
+          │
+          ▼
+Render Interactive AI Response
+```
 
-## 🤝 Contributing
+## 💻 Web Application
 
-Suggestions, bug reports, and improvements are welcome.
+The React frontend provides an interactive interface where users can:
 
-1. Fork the repository.
-2. Create a branch for your change.
-3. Make and test your changes.
-4. Open a pull request with a clear description.
+- Submit YouTube video URLs.
+- View video processing progress.
+- Start conversations about video content.
+- Ask follow-up questions.
+- View structured Markdown responses.
+- Navigate directly to relevant video timestamps.
+- Configure backend connection settings.
+- Switch between dark and light themes.
 
-## 📄 License
+The interface is divided into three primary screens:
 
-No license has been specified yet. Add a `LICENSE` file and update this section before presenting the project as open source.
+**1. Welcome Screen**
+- YouTube URL input.
+- Quick-start suggestions.
+- Video submission.
+
+**2. Loading Screen**
+- Transcript extraction progress.
+- Embedding generation progress.
+- Chat initialization.
+
+**3. Chat Screen**
+- Multi-turn conversation interface.
+- Structured AI responses.
+- Clickable timestamps.
+- Responsive sidebar and chat history.
+
+## ⚠️ Challenges & Limitations
+
+### 1️⃣ Transcript Availability
+
+The application depends on transcripts provided by YouTube.
+
+Some videos may not have accessible captions, and transcript availability can vary depending on the video and its caption configuration.
+
+A future improvement could integrate an independent speech-to-text pipeline.
+
+### 2️⃣ Multilingual Transcript Quality
+
+Although BGE-M3 supports multilingual embeddings, the quality of retrieval still depends on the quality and structure of the extracted transcript.
+
+Auto-generated captions may contain transcription errors, which can affect the final response.
+
+### 3️⃣ In-Memory Conversation Storage
+
+The current implementation uses LangGraph's `InMemorySaver` for conversation state.
+
+Conversation state is not designed for permanent storage across backend restarts.
+
+A persistent database integration is planned for future versions.
+
+### 4️⃣ LLM Response Quality
+
+The quality of generated responses depends on:
+
+- Transcript accuracy.
+- Query rewriting.
+- Retrieved context relevance.
+- Available context length.
+- Language model capabilities.
+
+Even with grounded prompts, responses may occasionally miss details or interpret ambiguous transcript passages incorrectly.
+
+### 5️⃣ Large Video Processing
+
+Long videos can require more time and computational resources for transcript processing and embedding generation.
+
+The embedding pipeline also depends on local hardware capabilities.
+
+### 6️⃣ Retrieval Limitations
+
+The current retrieval strategy combines 6 semantic chunks with the first 3 introductory chunks.
+
+Although this improves contextual coverage, some questions may require information spread across multiple sections of a video.
+
+Future improvements could include reranking and more advanced retrieval strategies.
+
+## 🚧 Future Improvements
+
+- [ ] Whisper / Faster-Whisper integration for videos without accessible transcripts.
+- [ ] Embedded YouTube player with in-chat timestamp navigation.
+- [ ] Persistent conversation storage using SQLite or PostgreSQL.
+- [ ] Retrieved transcript context inspector.
+- [ ] Improved multilingual transcript processing.
+- [ ] Advanced retrieval and reranking strategies.
+- [ ] Better handling of very long videos.
+- [ ] Improved conversation history management.
+- [ ] Streaming AI responses.
+- [ ] More detailed source references.
+
+## 📊 Performance Characteristics
+
+The following are observed performance figures from project testing.
+
+| Metric | Observed Performance |
+|---|---:|
+| Transcript ingestion (30-minute video) | 1.5–3 seconds |
+| Vector indexing | 2–4 seconds |
+| Query rewriting | 400–600 ms |
+| ChromaDB retrieval | Under 50 ms |
+| Response generation | 1.0–1.8 seconds |
+
+Actual performance may vary depending on hardware, network conditions, video length, and model response times.
+
+### Testing Coverage
+
+The system was tested with:
+
+- Long-form podcasts exceeding two hours.
+- Hindi and Hinglish educational lectures.
+- Technical explanations and tutorials.
+- Programming and code walkthroughs.
+- Multi-turn conversational queries.
+- Timestamp extraction and navigation.
+
+## 🧠 Key Engineering Highlights
+
+Some of the important technical decisions behind Enthra include:
+
+**Context-Aware Query Rewriting**
+
+Using conversation history to convert incomplete follow-up questions into standalone queries before retrieval.
+
+**Hybrid Context Retrieval**
+
+Combining semantic search results with introductory video chunks to preserve both specific and broader context.
+
+**Multilingual-Aware Chunking**
+
+Including Hindi punctuation separators to improve transcript segmentation for Indic languages.
+
+**Persistent Vector Indexing**
+
+Checking whether a video has already been indexed to avoid unnecessary embedding computation.
+
+**Thread-Isolated Conversations**
+
+Using LangGraph checkpointing to maintain separate conversation states for individual threads.
+
+**Grounded Timestamp Responses**
+
+Connecting AI-generated explanations to the original video through clickable timestamps.
 
 ---
 
 <div align="center">
 
-**ENTHRA**
+### ENTHRA
 
-*Your videos. Your questions. A conversation that understands the context.*
+**Your videos. Your questions. One intelligent conversation.**
 
 </div>
